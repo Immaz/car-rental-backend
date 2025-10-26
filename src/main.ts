@@ -25,6 +25,14 @@ async function bootstrap() {
   // Allow overriding origin in Render env; fallback to localhost during dev
   const origin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
 
+  // put this before app.enableCors(...)
+  app.use((req, res, next) => {
+    console.log(
+      `[CORS DEBUG] ${new Date().toISOString()} ${req.method} ${req.originalUrl} Origin:${req.headers.origin}`,
+    );
+    next();
+  });
+
   app.enableCors({
     origin: true,
     credentials: false,
