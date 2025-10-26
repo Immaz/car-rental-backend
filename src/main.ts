@@ -24,12 +24,16 @@ async function bootstrap() {
 
   // Allow overriding origin in Render env; fallback to localhost during dev
   const origin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
-  app.enableCors({ origin, credentials: true });
+  app.enableCors({
+    origin: '*', // allow any origin
+    credentials: false, // cannot use credentials with wildcard origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: '*',
+    optionsSuccessStatus: 204,
+  });
 
   app.useGlobalInterceptors(new ResponseHandlerInterceptor());
   app.useGlobalFilters(new CustomExceptionFilter());
-
-  app.enableCors();
   // IMPORTANT: bind to 0.0.0.0 and read Render's provided PORT env var
   const port = Number(process.env.PORT) || 4000;
   await app.listen(port, '0.0.0.0');
