@@ -6,18 +6,36 @@ import { CustomExceptionFilter } from './exceptions/error.handler';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
+  console.log('bootstrap start'); // diagnostic: did we get this far?
+
   const app = await NestFactory.create(AppModule);
+
+  console.log('app created'); // diagnostic
+
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // strips properties not in DTO
-      forbidNonWhitelisted: true, // throws error if extra props
-      transform: true, // auto-transforms payloads to DTO classes
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
-  app.enableCors({ origin: 'http://localhost:3000', credentials: true });
+
+  // Allow overriding origin in Render env; fallback to localhost during dev
+  const origin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+  app.enableCors({ origin, credentials: true });
+
   app.useGlobalInterceptors(new ResponseHandlerInterceptor());
   app.useGlobalFilters(new CustomExceptionFilter());
-  await app.listen(process.env.PORT ?? 4000);
+
+  // IMPORTANT: bind to 0.0.0.0 and read Render's provided PORT env var
+  const port = Number(process.env.PORT) || 4000;
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`Listening on port ${port} (bound to 0.0.0.0)`);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('bootstrap failed', err);
+  process.exit(1);
+});
