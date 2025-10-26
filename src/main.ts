@@ -33,9 +33,24 @@ async function bootstrap() {
     next();
   });
 
+  // read allowed origins from env (set this in Render)
+  const allowedOrigins = (
+    process.env.CORS_ORIGINS ||
+    'http://localhost:3000,https://car-rental.immaz.dev'
+  )
+    .split(',')
+    .map((s) => s.trim());
+
+  // reflect origin only if in allowed list; enable credentials
   app.enableCors({
-    origin: true,
-    credentials: false,
+    origin: (requestOrigin, callback) => {
+      if (!requestOrigin) return callback(null, true); // allow server-side tools
+      if (allowedOrigins.includes(requestOrigin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization, Accept, X-Requested-With',
     optionsSuccessStatus: 204,
