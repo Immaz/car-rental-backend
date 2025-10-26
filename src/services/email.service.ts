@@ -57,7 +57,7 @@ export class EmailService {
     return this.sendEmail(email, 'Confirm Your Email', htmlBody);
   }
 
-  private async sendEmail(to: string, subject: string, html: string) {
+  async sendEmail(to: string, subject: string, html: string) {
     const mailOptions = {
       from: this.fromEmail,
       to,
