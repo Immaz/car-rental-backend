@@ -29,6 +29,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseHandlerInterceptor());
   app.useGlobalFilters(new CustomExceptionFilter());
 
+  app.enableCors();
   // IMPORTANT: bind to 0.0.0.0 and read Render's provided PORT env var
   const port = Number(process.env.PORT) || 4000;
   await app.listen(port, '0.0.0.0');
