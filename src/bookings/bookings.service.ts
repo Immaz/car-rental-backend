@@ -36,7 +36,7 @@ export class BookingsService {
       const booking = await this.bookingRepo.save(bookingData);
 
       const user = await this.usersService.getUser(createBookingDto.booked_by);
-      await this.emailService.send(
+      await this.emailService.sendEmail(
         'Booking Confirmed',
         `Hey ${user?.first_name + ' ' + user?.last_name}. Your Booking is confirmed`,
         `${user?.email}`,
