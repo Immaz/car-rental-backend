@@ -24,9 +24,13 @@ async function bootstrap() {
 
   // Allow overriding origin in Render env; fallback to localhost during dev
   const origin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+
   app.enableCors({
-    origin: '*',
+    origin: true,
     credentials: false,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, Accept, X-Requested-With',
+    optionsSuccessStatus: 204,
   });
 
   app.useGlobalInterceptors(new ResponseHandlerInterceptor());
