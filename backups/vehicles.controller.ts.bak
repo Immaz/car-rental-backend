@@ -20,7 +20,7 @@ import {
 } from './dto/vehicle.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ReviewsDto } from './dto/reviews.dto';
-import { JwtverifyGuard } from '../guards/jwtverify.guard';
+import { JwtverifyGuard } from 'src/guards/jwtverify.guard';
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}

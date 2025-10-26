@@ -16,7 +16,7 @@ import { VehiclePicture } from './entities/vehicle.picture.entity';
 import { Repository } from 'typeorm';
 import { Reviews } from './entities/reviews.entity';
 import { ReviewsDto } from './dto/reviews.dto';
-import { BookingsService } from '../bookings/bookings.service';
+import { BookingsService } from 'src/bookings/bookings.service';
 
 @Injectable()
 export class VehiclesService {

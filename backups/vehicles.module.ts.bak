@@ -4,7 +4,7 @@ import { VehiclesController } from './vehicles.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehiclePicture } from './entities/vehicle.picture.entity';
-import { ImageKitProvider } from '../imagekit.provider';
+import { ImageKitProvider } from 'src/imagekit.provider';
 import { ConfigModule } from '@nestjs/config';
 import { Reviews } from './entities/reviews.entity';
 import { BookingsModule } from 'src/bookings/bookings.module';

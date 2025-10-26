@@ -10,7 +10,7 @@ import { Repository, In } from 'typeorm';
 import { Users } from './entities/users.entity';
 import { CreateUserDto, LoginDto, updatePassDto } from './dto/user.dto';
 import { ConfigService } from '@nestjs/config';
-import { EmailService } from '../services/email.service';
+import { EmailService } from 'src/services/email.service';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import express from 'express';

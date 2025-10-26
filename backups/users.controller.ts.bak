@@ -25,7 +25,7 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import express from 'express';
 import { EmailService } from '../services/email.service';
 import { Users } from './entities/users.entity';
-import { JwtverifyGuard } from '../guards/jwtverify.guard';
+import { JwtverifyGuard } from 'src/guards/jwtverify.guard';
 
 @UseInterceptors(AnyFilesInterceptor())
 @Controller('users')

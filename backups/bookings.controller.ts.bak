@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CancelBookingDto, CreateBookingDto } from './dto/booking.dto';
-import { JwtverifyGuard } from '../guards/jwtverify.guard';
+import { JwtverifyGuard } from 'src/guards/jwtverify.guard';
 
 @Controller('bookings')
 export class BookingsController {
