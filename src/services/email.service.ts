@@ -1,3 +1,4 @@
+// src/services/email.service.ts
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
@@ -8,21 +9,43 @@ export class EmailService {
   private fromEmail: string;
 
   constructor(private readonly configService: ConfigService) {
+    // get host with fallback
+    const host =
+      this.configService.get<string>('MAIL_HOST') ?? 'smtp.mailersend.net';
+
+    // parse port safely (env values are strings)
+    const portStr = this.configService.get<string>('MAIL_PORT');
+    const port = parseInt(portStr ?? '587', 10) || 587;
+
+    // auth values (may be undefined in some envs; nodemailer will error if missing)
+    const user = this.configService.get<string>('MAIL_USER') ?? '';
+    const pass = this.configService.get<string>('MAIL_PASS') ?? '';
+
     this.transporter = nodemailer.createTransport({
-      host: this.configService.get<string>('MAIL_HOST'),
-      port: this.configService.get<number>('MAIL_PORT'),
-      secure: false,
+      host,
+      port,
+      secure: false, // keep false for 587 / 2525
       auth: {
-        user: this.configService.get<string>('MAIL_USER'),
-        pass: this.configService.get<string>('MAIL_PASS'),
+        user,
+        pass,
       },
     });
 
-    this.fromEmail = this.configService.get<string>('MAIL_FROM');
+    // fallback from address so type is always string (replace with your verified sender)
+    this.fromEmail =
+      this.configService.get<string>('MAIL_FROM') ?? `no-reply@localhost`;
   }
 
-  async sendFPMail(email: string, userId: string) {
-    const url = `${this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000'}forgotpassword/user/${userId}`;
+  // Accept number|string for userId because callers may pass either
+  async sendFPMail(
+    email: string,
+    userId: string | number,
+  ): Promise<'success' | 'error'> {
+    const rawFrontend =
+      this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:3000';
+    const frontend = rawFrontend.replace(/\/+$/g, ''); // remove trailing slash(es)
+    const url = `${frontend}/forgotpassword/user/${String(userId)}`;
+
     const btn = `<a href="${url}" 
        style="
          display: inline-block;
@@ -39,8 +62,15 @@ export class EmailService {
     return this.sendEmail(email, 'Change Password', htmlBody);
   }
 
-  async sendConfirmMail(email: string, userId: string) {
-    const url = `${this.configService.get<string>('BACKEND_URL') || 'http://localhost:4000'}users/verifyuser/${userId}`;
+  async sendConfirmMail(
+    email: string,
+    userId: string | number,
+  ): Promise<'success' | 'error'> {
+    const rawBackend =
+      this.configService.get<string>('BACKEND_URL') ?? 'http://localhost:4000';
+    const backend = rawBackend.replace(/\/+$/g, '');
+    const url = `${backend}/users/verifyuser/${String(userId)}`;
+
     const btn = `<a href="${url}" 
        style="
          display: inline-block;
@@ -57,7 +87,11 @@ export class EmailService {
     return this.sendEmail(email, 'Confirm Your Email', htmlBody);
   }
 
-  async sendEmail(to: string, subject: string, html: string) {
+  async sendEmail(
+    to: string,
+    subject: string,
+    html: string,
+  ): Promise<'success' | 'error'> {
     const mailOptions = {
       from: this.fromEmail,
       to,
